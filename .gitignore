@@ -1,0 +1,37 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+out/
+dist-electron/
+
+# TS build info
+*.tsbuildinfo
+
+# IDE/Editor config
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
