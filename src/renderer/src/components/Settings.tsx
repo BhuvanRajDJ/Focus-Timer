@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react'
 import type { Config, AlarmSound } from '../../../shared/types'
 
-const SOUNDS: AlarmSound[] = ['chime', 'beep', 'marimba']
+const SOUNDS: AlarmSound[] = ['chime', 'beep', 'marimba', 'steadyAscent']
+
+const SOUND_NAMES: Record<AlarmSound, string> = {
+  chime: 'Chime',
+  beep: 'Beep',
+  marimba: 'Marimba',
+  steadyAscent: 'Steady Ascent'
+}
 
 const row: React.CSSProperties = {
   display: 'flex',
@@ -57,7 +64,7 @@ export function Settings({ onClose, onPreview }: { onClose: () => void; onPrevie
     >
       {SOUNDS.map((s) => (
         <option key={s} value={s}>
-          {s}
+          {SOUND_NAMES[s]}
         </option>
       ))}
     </select>

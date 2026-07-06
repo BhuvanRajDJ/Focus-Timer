@@ -1,5 +1,6 @@
 import { app, dialog } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import pkg from 'electron-updater'
+const { autoUpdater } = pkg
 
 /**
  * Initializes the background auto-updater in production.
