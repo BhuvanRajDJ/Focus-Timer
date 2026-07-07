@@ -12,7 +12,7 @@ pub fn create_main_window(app: &AppHandle) -> Result<WebviewWindow, String> {
         .title("Focus Timer")
         .inner_size(380.0, 560.0)
         .min_inner_size(320.0, 480.0)
-        .background_color(tauri::Color(20, 22, 28, 255)) // #14161c
+        .background_color(tauri::window::Color(20, 22, 28, 255)) // #14161c
         .resizable(true)
         .visible(false)
         .build()
@@ -84,13 +84,20 @@ pub fn create_float_window(app: &AppHandle) -> Result<WebviewWindow, String> {
 
     let _ = win.show();
 
-    // Re-assert always on top on blur to ensure it stays above other windows on Windows
+    // Re-assert always on top on blur to ensure it stays above other windows on Windows.
+    // Deferred via run_on_main_thread: calling set_always_on_top synchronously from inside
+    // this focus-change callback re-enters the Windows message pump (WM_ACTIVATE handling
+    // SetWindowPos) and can hang the whole app. Queuing it for the next main-thread tick
+    // avoids the reentrant call.
     let win_clone = win.clone();
     let app_clone = app.clone();
     win.on_window_event(move |event| {
         match event {
             tauri::WindowEvent::Focused(false) => {
-                let _ = win_clone.set_always_on_top(true);
+                let win_for_thread = win_clone.clone();
+                let _ = app_clone.run_on_main_thread(move || {
+                    let _ = win_for_thread.set_always_on_top(true);
+                });
             }
             tauri::WindowEvent::CloseRequested { .. } => {
                 if let Ok(pos) = win_clone.outer_position() {

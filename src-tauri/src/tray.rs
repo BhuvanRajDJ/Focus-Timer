@@ -56,12 +56,13 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), String> {
             }
             _ => {}
         })
-        .on_tray_icon_event(|app, event| {
+        .on_tray_icon_event(|tray, event| {
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,
                 ..
             } = event
             {
+                let app = tray.app_handle();
                 let _ = create_main_window(app);
             }
         })

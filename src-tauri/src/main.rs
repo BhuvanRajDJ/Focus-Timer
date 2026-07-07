@@ -8,13 +8,13 @@ mod windows;
 
 use config::{load_config, save_config, Config, AlarmSound};
 use db::{init_db, log_completed_session};
-use engine::{EngineConfig, TimerEngine, TimerState, SessionType, TimerStatus};
+use engine::{EngineConfig, TimerEngine, TimerState, SessionType};
 use windows::{create_float_window, create_main_window, close_float_window, close_main_window, save_float_bounds};
 use tray::setup_tray;
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 
 struct AppState {
     engine: Arc<Mutex<TimerEngine>>,
@@ -22,6 +22,7 @@ struct AppState {
 
 #[derive(serde::Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
+#[allow(non_snake_case)]
 struct AlarmPayload {
     sound: AlarmSound,
     muted: bool,
@@ -118,9 +119,17 @@ fn window_open_float(app: AppHandle) -> Result<(), String> {
     cfg.lastMode = "float".to_string();
     let _ = save_config(&app, &cfg);
 
-    create_float_window(&app)?;
-    close_main_window(&app);
-    Ok(())
+    // Building a WebviewWindow from a synchronous command handler thread deadlocks on
+    // Windows (WebView2 requires window creation on the main thread). Defer it.
+    let app_for_thread = app.clone();
+    app.run_on_main_thread(move || {
+        if let Err(e) = create_float_window(&app_for_thread) {
+            eprintln!("Failed to create float window: {}", e);
+            return;
+        }
+        close_main_window(&app_for_thread);
+    })
+    .map_err(|e| format!("Failed to dispatch window creation to main thread: {}", e))
 }
 
 #[tauri::command]
@@ -129,9 +138,16 @@ fn window_open_main(app: AppHandle) -> Result<(), String> {
     cfg.lastMode = "full".to_string();
     let _ = save_config(&app, &cfg);
 
-    create_main_window(&app)?;
-    close_float_window(&app);
-    Ok(())
+    // Same deadlock hazard as window_open_float — defer window build to the main thread.
+    let app_for_thread = app.clone();
+    app.run_on_main_thread(move || {
+        if let Err(e) = create_main_window(&app_for_thread) {
+            eprintln!("Failed to create main window: {}", e);
+            return;
+        }
+        close_float_window(&app_for_thread);
+    })
+    .map_err(|e| format!("Failed to dispatch window creation to main thread: {}", e))
 }
 
 #[tauri::command]
@@ -197,10 +213,11 @@ fn main() {
                 loop {
                     std::thread::sleep(Duration::from_millis(250));
                     
-                    let mut engine = match ticker_app.try_state::<AppState>() {
-                        Some(state) => state.engine.lock().unwrap(),
+                    let state = match ticker_app.try_state::<AppState>() {
+                        Some(s) => s,
                         None => break, // app shut down
                     };
+                    let mut engine = state.engine.lock().unwrap();
 
                     // Check if current running session finished
                     if let Some(ended_type) = engine.tick() {

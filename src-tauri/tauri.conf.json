@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "identifier": "com.focustimer.app",
   "build": {
-    "beforeDevCommand": "npm run build",
+    "beforeDevCommand": "npm run dev:frontend",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173"
@@ -19,7 +19,8 @@
         "minHeight": 480,
         "resizable": true,
         "visible": false,
-        "url": "index.html"
+        "url": "index.html",
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion"
       },
       {
         "label": "float",
@@ -36,18 +37,20 @@
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "visible": false,
-        "url": "float.html"
+        "url": "float.html",
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion"
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' data:; connect-src 'self' ws://localhost:5173 ipc: tauri:"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' data:; connect-src 'self' ws://localhost:5173 ipc: http://ipc.localhost"
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
     "icon": [
-      "resources/icon.png"
+      "resources/icon.png",
+      "resources/icon.ico"
     ],
     "resources": [
       "resources/A_Steady_Ascent.mp3",

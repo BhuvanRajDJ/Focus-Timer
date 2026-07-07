@@ -41,6 +41,7 @@ impl Default for FloatBounds {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[allow(non_snake_case)]
 pub struct Config {
     pub focusMinutes: u32,
     pub shortBreakMinutes: u32,

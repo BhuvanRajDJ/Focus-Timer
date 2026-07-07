@@ -29,6 +29,7 @@ pub enum TimerStatus {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[allow(non_snake_case)]
 pub struct TimerState {
     pub status: TimerStatus,
     pub sessionType: SessionType,
