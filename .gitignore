@@ -5,6 +5,7 @@ node_modules/
 dist/
 out/
 dist-electron/
+src-tauri/target/
 
 # TS build info
 *.tsbuildinfo

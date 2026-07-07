@@ -5,7 +5,7 @@ import { writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'resources')
+const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src-tauri', 'resources')
 mkdirSync(outDir, { recursive: true })
 
 // ---- CRC32 (PNG chunk checksums) -------------------------------------------

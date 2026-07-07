@@ -35,6 +35,7 @@ export function FloatApp() {
   return (
     <div
       className="float-container"
+      data-tauri-drag-region
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

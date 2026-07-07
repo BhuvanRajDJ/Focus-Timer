@@ -1,3 +1,4 @@
+import './tauri-bridge'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { FloatApp } from './FloatApp'

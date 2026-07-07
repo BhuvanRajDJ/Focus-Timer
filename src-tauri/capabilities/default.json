@@ -1,0 +1,8 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for Focus Timer",
+  "windows": ["main", "float"],
+  "permissions": [
+    "core:default"
+  ]
+}
